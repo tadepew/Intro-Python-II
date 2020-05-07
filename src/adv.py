@@ -1,5 +1,6 @@
 from room import Room
 from player import Player
+from item import Items
 
 # Declare all the rooms
 
@@ -34,12 +35,30 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+
 #
 # Main
 #
+items = {
+    'key':          Items("Mysterious Key", "What will it unlock?"),
+    'map':          Items("map", "Where does it go?"),
+    # 'vase':         Items("vase", "A treasure?"),
+    'birdhouse':    Items("Wooden Birdhouse", "Nice"),
+    'lantern':      Items("Gaslight Lantern", "To help you see"),
+    'chest':        Items("Locked Chest", "What's inside?")
+}
+
+
+# room['outside'].items = [items[k] for k in ('key', 'map')]
+room['outside'].items.append(Items('map', 'where does it go?'))
+room['foyer'].items.append(Items('vase', 'A treasure?'))
+room['overlook'].items.append(Items('birdhouse', 'Nice'))
+room['narrow'].items.append(Items('lantern', 'to help you see'))
+room['treasure'].items.append(Items('chest', 'what is inside?'))
 
 # Make a new player object that is currently in the 'outside' room.
 player = Player("Tristan", room['outside'])
+
 
 # print(player)
 # Write a loop that:
@@ -52,33 +71,105 @@ player = Player("Tristan", room['outside'])
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
-while True:
-    print(
-        f"Current room: {player.location}")
-    print(f"Room description: {player.location.description}")
-    selection = input("Move rooms by typing 'N', 'E', 'W', or 'S': ")
+def print_instructions():
+    print("To move, type 'n', 's', 'e', or 'w'.")
+    print("To quit, type q")
+    print("To pick up an item, type 'get (item name).")
+    print("To view these instructions, type '?'\n")
 
-    if selection == "e":
+
+print("Welcome to the Adventure Game!")
+print_instructions()
+
+print(f"Current room: {player.location}")
+print(f"Room description: {player.location.description}")
+
+while True:
+    selection = input("Type here: ").lower()
+    sep_selection = selection.strip().split(" ")
+
+    if len(player.inventory) > 0:
+        print: ("Your items are below")
+        print(*player.inventory)
+
+    if selection == "exit":
         print("Thanks for playing")
         break
+
     try:
-        if selection == "N":
-            player.location = player.location.n_to
-            print(f"Moved to room '{player.location}'")
+        if len(sep_selection) == 1:
 
-        elif selection == "E" and player.location.e_to == True:
-            player.location = player.location.e_to
-            print(f"Moved to room '{player.location}")
+            if selection == "?":
+                print_instructions()
 
-        elif selection == "S" and player.location.s_to == True:
-            player.location = player.location.s_to
-            print(f"Moved to room '{player.location}'")
+            elif selection in ["n", "s", "e", "w"]:
+                next_room = player.location.get_next_room(selection)
 
-        elif selection == "W" and player.location.w_to == True:
-            player.location = player.location.w_to
-            print(f"Moved to room '{player.location}'")
+                if next_room:
+                    player.move_to_room(next_room)
+                    print(
+                        f"You are now in {next_room} ... {next_room.description}")
+                    print(f"Room items: {next_room.items[0]}")
+
+                else:
+                    print("Can't go that way!")
+
+        elif len(sep_selection) == 2:
+            verb = sep_selection[0]
+            obj = sep_selection[1]
+
+            if verb == "get":
+                if obj == str(next_room.items[0]):
+                    obj = next_room.items[0]
+                    player.get_item(next_room.items[0])
+                    print(f"your inventory: {player.inventory}")
+
+            elif verb == 'drop':
+                player.drop_item(obj)
+
+            else:
+                print("Hmm... item not found!")
 
         else:
-            print(f"Can't move that way from {player.location}")
-    except ValueError:
+            print(f"Please give valid input {selection[0]}")
+
+    except:
         print("Please enter valid direction")
+
+
+# below is old way I compared directions to see if true, study this and new way
+        # if selection == "n":
+        #     if player.location.n_to != None:
+        #         player.location = player.location.n_to
+        #         print(
+        #             f"Moved to room '{player.location}' Description: {player.location.description}")
+        #         print(f"Items in room: {player.location.items}")
+        #     else:
+        #         print("Can't go that way")
+
+        # elif selection == "e":
+        #     if player.location.e_to != None:
+        #         player.location = player.location.e_to
+        #         print(
+        #             f"Moved to room '{player.location} Description: {player.location.description}")
+        #         print(f"Items in room: {player.location.items}")
+        #     else:
+        #         print("Can't go that way")
+
+        # elif selection == "s":
+        #     if player.location.s_to != None:
+        #         player.location = player.location.s_to
+        #         print(
+        #             f"Moved to room '{player.location}' Description: {player.location.description}")
+        #         print(f"Items in room: {player.location.items}")
+        #     else:
+        #         print("Can't go that way")
+
+        # elif selection == "w":
+        #     if player.location.w_to != None:
+        #         player.location = player.location.w_to
+        #         print(
+        #             f"Moved to room '{player.location}' Description: {player.location.description}")
+        #         print(f"Items in room: {player.location.items}")
+        #     else:
+        #         print("Can't go that way")
