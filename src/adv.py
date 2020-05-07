@@ -41,7 +41,7 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 player = Player("Tristan", room['outside'])
 
-print(player)
+# print(player)
 # Write a loop that:
 #
 # * Prints the current room name
@@ -63,19 +63,22 @@ while True:
         break
     try:
         if selection == "N":
-            print(f"Moved to room '{player.location.n_to}'")
-            print(f"Moved to room '{player.location}")
+            player.location = player.location.n_to
+            print(f"Moved to room '{player.location}'")
 
         elif selection == "E" and player.location.e_to == True:
-            print(f"Moved to room '{player.location.n_to}")
+            player.location = player.location.e_to
+            print(f"Moved to room '{player.location}")
 
         elif selection == "S" and player.location.s_to == True:
-            print(f"Moved to room '{player.location.s_to}'")
+            player.location = player.location.s_to
+            print(f"Moved to room '{player.location}'")
 
         elif selection == "W" and player.location.w_to == True:
-            print(f"Moved to room '{player.location.w_to}'")
+            player.location = player.location.w_to
+            print(f"Moved to room '{player.location}'")
 
         else:
-            print(f"Can't move rooms from {player.location.n_to}")
-    except TypeError:
+            print(f"Can't move that way from {player.location}")
+    except ValueError:
         print("Please enter valid direction")
