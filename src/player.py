@@ -18,8 +18,19 @@ class Player:
     def get_item(self, item_name):
         self.inventory.append(item_name)
         self.location.remove_item(item_name)
-        print(f"Nice work, {item_name} added!")
+        print(f"Nice work, {item_name.name} added!")
 
     def drop_item(self, item_name):
-        self.inventory.pop(item_name)
+        self.inventory.remove(item_name)
+        self.location.items.append(item_name)
         print("Item dropped.")
+
+    def print_items(self):
+
+        if len(self.inventory) > 0:
+            item_names = [item.item_name() for item in self.inventory]
+            print("Your items:", end=" ")
+            print(*item_names, sep=', ', end='\n')
+
+        else:
+            print("No items yet.")

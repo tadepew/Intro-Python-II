@@ -17,6 +17,17 @@ class Room:
     def __str__(self):
         return f"{self.name}"
 
+    # def print_items(self):
+
+    #     if len(self.items) > 0:
+
+    #         print("Room items: ")
+
+    #         item_names = [item for item in self.items]
+    #         print(", " .join(item_names))
+
+    # def
+
     def get_next_room(self, direction):
         if direction == "n":
             return self.n_to
@@ -30,3 +41,10 @@ class Room:
     def remove_item(self, item):
         if item:
             self.items.remove(item)
+
+    def print_items(self):
+        if len(self.items) > 0:
+            item_name = [item.name for item in self.items]
+            # for items in self.items:
+            print("Room item(s):", end=" ")
+            print(*item_name, sep=', ', end='\n')

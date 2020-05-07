@@ -1,6 +1,8 @@
 from room import Room
 from player import Player
 from item import Items
+import os
+import sys
 
 # Declare all the rooms
 
@@ -39,22 +41,26 @@ room['treasure'].s_to = room['narrow']
 #
 # Main
 #
-items = {
-    'key':          Items("Mysterious Key", "What will it unlock?"),
-    'map':          Items("map", "Where does it go?"),
-    # 'vase':         Items("vase", "A treasure?"),
-    'birdhouse':    Items("Wooden Birdhouse", "Nice"),
-    'lantern':      Items("Gaslight Lantern", "To help you see"),
-    'chest':        Items("Locked Chest", "What's inside?")
-}
+# items = {
+#     'key':          Items("Mysterious Key", "What will it unlock?"),
+#     'map':          Items("map", "Where does it go?"),
+#     # 'vase':         Items("vase", "A treasure?"),
+#     'birdhouse':    Items("Wooden Birdhouse", "Nice"),
+#     'lantern':      Items("Gaslight Lantern", "To help you see"),
+#     'chest':        Items("Locked Chest", "What's inside?")
+# }
+
+# typeOf to find out what kind of object
+# best way to add multiple items to rooms?
 
 
 # room['outside'].items = [items[k] for k in ('key', 'map')]
-room['outside'].items.append(Items('map', 'where does it go?'))
+room['outside'].items.append(Items('map', 'Where does it go?'))
+room['outside'].items.append(Items('key', 'What does it unlock?'))
 room['foyer'].items.append(Items('vase', 'A treasure?'))
 room['overlook'].items.append(Items('birdhouse', 'Nice'))
-room['narrow'].items.append(Items('lantern', 'to help you see'))
-room['treasure'].items.append(Items('chest', 'what is inside?'))
+room['narrow'].items.append(Items('lantern', 'To help you see'))
+room['treasure'].items.append(Items('chest', 'What is inside?'))
 
 # Make a new player object that is currently in the 'outside' room.
 player = Player("Tristan", room['outside'])
@@ -72,27 +78,35 @@ player = Player("Tristan", room['outside'])
 #
 # If the user enters "q", quit the game.
 def print_instructions():
-    print("To move, type 'n', 's', 'e', or 'w'.")
-    print("To quit, type q")
-    print("To pick up an item, type 'get (item name).")
-    print("To view these instructions, type '?'\n")
+    print("--------------")
+    print("*To move, type 'n', 's', 'e', or 'w'")
+    print("*To quit, type 'q'")
+    print("*To pick up an item, type 'get + item name'")
+    print("*To drop an item, type 'drop + item name'")
+    print("*To check your inventory, type 'i' or 'inventory'")
+    print("*To view these instructions, type '?'")
+    print("--------------\n")
 
 
-print("Welcome to the Adventure Game!")
+print("")
+print("Welcome to the Adventure Game!\n")
 print_instructions()
+print("****Good luck!****\n")
 
 print(f"Current room: {player.location}")
-print(f"Room description: {player.location.description}")
+print(f"Room description: {player.location.description}\n")
+
 
 while True:
+    if len(room['outside'].items) == 0 and len(room['foyer'].items) == 0 and len(room['overlook'].items) == 0 and len(room['narrow'].items) == 0 and len(room['treasure'].items) == 0:
+        print("")
+        print("****You won the game!****\n")
+        print("Press 'r' to restart")
+
     selection = input("Type here: ").lower()
     sep_selection = selection.strip().split(" ")
 
-    if len(player.inventory) > 0:
-        print: ("Your items are below")
-        print(*player.inventory)
-
-    if selection == "exit":
+    if selection == "q":
         print("Thanks for playing")
         break
 
@@ -109,31 +123,45 @@ while True:
                     player.move_to_room(next_room)
                     print(
                         f"You are now in {next_room} ... {next_room.description}")
-                    print(f"Room items: {next_room.items[0]}")
+                    player.location.print_items()
 
                 else:
                     print("Can't go that way!")
+
+            elif selection in ["i", "inventory"]:
+                player.print_items()
+
+            elif selection == 'r':
+                os.execl(sys.executable, sys.executable, *sys.argv)
+
+            else:
+                print("Please give a valid input.")
 
         elif len(sep_selection) == 2:
             verb = sep_selection[0]
             obj = sep_selection[1]
 
             if verb == "get":
-                if obj == str(next_room.items[0]):
-                    obj = next_room.items[0]
-                    player.get_item(next_room.items[0])
-                    print(f"your inventory: {player.inventory}")
+                for item in next_room.items:
+                    if obj == item.name:
+                        obj = item
+                        player.get_item(obj)
+
+                    # error handling prints if there are items that != obj before correct item
 
             elif verb == 'drop':
-                player.drop_item(obj)
+                for item in player.inventory:
+                    if obj == item.name:
+                        obj = item
+                        player.drop_item(obj)
 
             else:
-                print("Hmm... item not found!")
+                print("Hmm... try again.")
 
         else:
-            print(f"Please give valid input {selection[0]}")
+            print("Please give valid input")
 
-    except:
+    except ValueError:
         print("Please enter valid direction")
 
 
@@ -173,3 +201,5 @@ while True:
         #         print(f"Items in room: {player.location.items}")
         #     else:
         #         print("Can't go that way")
+
+# to learn more about an item, simply type the item name

@@ -3,5 +3,5 @@ class Items:
         self.name = name
         self.description = description
 
-    def __str__(self):
+    def item_name(self):
         return f"{self.name}"
